@@ -2,7 +2,6 @@ import HeroSection from "@/components/HeroSection";
 import EventDetails from "@/components/EventDetails";
 import LocationSection from "@/components/LocationSection";
 import RSVPForm from "@/components/RSVPForm";
-import GiftSection from "@/components/GiftSection";
 import WhatsWaiting from "@/components/WhatsWaiting";
 import FallingLeaves from "@/components/FallingLeaves";
 
@@ -36,7 +35,6 @@ export default function Home() {
         <WhatsWaiting />
         <LocationSection />
         <RSVPForm />
-        <GiftSection />
       </div>
     </main>
   );
