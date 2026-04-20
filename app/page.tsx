@@ -3,6 +3,7 @@ import EventDetails from "@/components/EventDetails";
 import LocationSection from "@/components/LocationSection";
 import RSVPForm from "@/components/RSVPForm";
 import GiftSection from "@/components/GiftSection";
+import WhatsWaiting from "@/components/WhatsWaiting";
 import FallingLeaves from "@/components/FallingLeaves";
 
 export default function Home() {
@@ -32,6 +33,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col items-center gap-0 pb-24">
         <HeroSection />
         <EventDetails />
+        <WhatsWaiting />
         <LocationSection />
         <RSVPForm />
         <GiftSection />
