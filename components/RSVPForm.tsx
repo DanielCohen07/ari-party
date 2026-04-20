@@ -63,10 +63,29 @@ export default function RSVPForm() {
           <p className="text-lg font-medium mb-2" style={{ color: "#90caf9" }}>
             {form.firstName}, נתראה ב-7 במאי!
           </p>
-          <p className="text-sm" style={{ color: "#64b5f6" }}>
+          <p className="text-sm mb-6" style={{ color: "#64b5f6" }}>
             זכור · זו הפתעה! 🤫 לא מספרים לארי.
           </p>
-          <div className="mt-8 text-4xl">🫒🇬🇷🫒</div>
+
+          {/* Gift CTA */}
+          <div className="rounded-2xl px-5 py-4 mb-4 border text-center"
+            style={{ background: "rgba(200,134,10,0.10)", borderColor: "rgba(200,134,10,0.30)" }}>
+            <p className="text-sm font-bold mb-3" style={{ color: "#f0b429" }}>
+              🎁 רוצה לשלוח מתנה?
+            </p>
+            <a
+              href="https://links.payboxapp.com/FYKpSn4Lu2b"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-bold text-sm cursor-pointer hover:brightness-110 transition-all duration-200"
+              style={{ background: "linear-gradient(135deg, #c8860a, #f0b429)", color: "#07071a", minHeight: "44px" }}
+            >
+              הצטרפות לקבוצת PayBox 🎂
+            </a>
+            <p className="text-xs mt-2" style={{ color: "rgba(147,197,253,0.5)" }}>חינם · עד מאי 2026</p>
+          </div>
+
+          <div className="mt-4 text-4xl">🫒🇬🇷🫒</div>
         </div>
       </section>
     );

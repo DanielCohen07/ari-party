@@ -1,12 +1,26 @@
 const WAZE_URL =
   "https://ul.waze.com/ul?ll=31.92087793%2C35.03366232&navigate=yes&zoom=17&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location";
 
+const CAL_DETAILS = encodeURIComponent(
+  "🎉 חגיגת יובל בהפתעה – ארי חוגג 50!\n" +
+  "📍 האופק 16, כפר האורנים | 🕕 18:00\n" +
+  "👗 קוד לבוש: לבן | 🩱 הביאו בגד ים ומגבת\n" +
+  "🧑‍🤝‍🧑 אירוע למבוגרים בלבד\n\n" +
+  "⏰ תזכורת: אל תאחרו – זו הפתעה!\n\n" +
+  "🎁 רוצה לשלוח מתנה?\n" +
+  "הצטרפו לקבוצת PayBox של האירוע:\n" +
+  "https://links.payboxapp.com/FYKpSn4Lu2b\n" +
+  "גם ביט ופייבוקס מתקבלים בשמחה 💙\n" +
+  "השימוש ב-PayBox חינם!\n\n" +
+  "🤫 זו הפתעה – לא מספרים לארי!"
+);
+
 const GOOGLE_CAL_URL =
   "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-  "&text=%D7%99%D7%95%D7%9D+%D7%94%D7%95%D7%9C%D7%93%D7%AA+50+%D7%A9%D7%9C+%D7%90%D7%A8%D7%99" +
+  "&text=%D7%99%D7%95%D7%9D+%D7%94%D7%95%D7%9C%D7%93%D7%AA+50+%D7%A9%D7%9C+%D7%90%D7%A8%D7%99+%F0%9F%8E%89" +
   "&dates=20260507T150000Z/20260507T200000Z" +
-  "&details=%D7%97%D7%92%D7%99%D7%92%D7%AA+%D7%99%D7%95%D7%91%D7%9C+%D7%91%D7%94%D7%A4%D7%AA%D7%A2%D7%94" +
-  "&location=%D7%94%D7%90%D7%95%D7%A4%D7%A7+16+%D7%9B%D7%A4%D7%A8+%D7%94%D7%90%D7%95%D7%A8%D7%A0%D7%99%D7%9D";
+  "&details=" + CAL_DETAILS +
+  "&location=%D7%94%D7%90%D7%95%D7%A4%D7%A7+16%2C+%D7%9B%D7%A4%D7%A8+%D7%94%D7%90%D7%95%D7%A8%D7%A0%D7%99%D7%9D";
 
 function MapPinIcon() {
   return (
