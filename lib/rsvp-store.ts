@@ -29,3 +29,23 @@ export async function addRSVP(
   await kv.set(KEY, all);
   return entry;
 }
+
+export async function deleteRSVP(id: string): Promise<boolean> {
+  const all = await getAllRSVPs();
+  const next = all.filter((r) => r.id !== id);
+  if (next.length === all.length) return false;
+  await kv.set(KEY, next);
+  return true;
+}
+
+export async function updateRSVP(
+  id: string,
+  data: Partial<Pick<RSVP, "firstName" | "lastName" | "guests">>
+): Promise<RSVP | null> {
+  const all = await getAllRSVPs();
+  const idx = all.findIndex((r) => r.id === id);
+  if (idx === -1) return null;
+  all[idx] = { ...all[idx], ...data };
+  await kv.set(KEY, all);
+  return all[idx];
+}
