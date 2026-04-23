@@ -19,18 +19,20 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; font-size: 18px; }
 
 body {
-  font-family: var(--font-heebo), system-ui, sans-serif;
+  font-family: var(--font-assistant), system-ui, sans-serif;
   color: #e8f0fe;
   direction: rtl;
   min-height: 100vh;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* ── Glass cards ──────────────────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.09);
   backdrop-filter: blur(28px) saturate(200%);
   -webkit-backdrop-filter: blur(28px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -52,12 +54,12 @@ body {
 /* ── Animations ───────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-12px); }
+  50%       { transform: translateY(-10px); }
 }
 .float-anim { animation: float 5s ease-in-out infinite; }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-up         { animation: fadeUp 0.75s cubic-bezier(.22,1,.36,1) both; }
@@ -76,7 +78,7 @@ body {
 
 @keyframes pulseGold {
   0%, 100% { box-shadow: 0 0 0 0 rgba(200,134,10,0.4); }
-  50%       { box-shadow: 0 0 0 10px rgba(200,134,10,0); }
+  50%       { box-shadow: 0 0 0 12px rgba(200,134,10,0); }
 }
 .pulse-gold { animation: pulseGold 2.2s ease-in-out infinite; }
 
@@ -89,13 +91,17 @@ body {
 
 /* ── Focus ────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #f0b429;
+  outline: 3px solid #f0b429;
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 /* ── Forms RTL ────────────────────────────────── */
-input, select, textarea { direction: rtl; text-align: right; }
+input, select, textarea {
+  direction: rtl;
+  text-align: right;
+  font-size: 16px !important; /* prevents iOS auto-zoom */
+}
 
 /* ── Scrollbar ────────────────────────────────── */
 ::-webkit-scrollbar       { width: 5px; }

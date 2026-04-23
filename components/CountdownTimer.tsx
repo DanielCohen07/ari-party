@@ -40,7 +40,7 @@ export default function CountdownTimer() {
   if (time.done) {
     return (
       <section className="w-full max-w-2xl px-4 pb-10 fade-up fade-up-delay-1">
-        <div className="glass rounded-3xl p-6 shadow-2xl text-center border"
+        <div className="glass rounded-3xl p-8 shadow-2xl text-center border"
           style={{ borderColor: "rgba(200,134,10,0.35)" }}>
           <p style={{ fontFamily: "var(--font-secular), sans-serif", fontSize: "1.6rem", color: "#f0b429" }}>
             🎉 המסיבה מתחילה עכשיו! OPA! 🎉
@@ -55,25 +55,27 @@ export default function CountdownTimer() {
       <div className="glass rounded-3xl p-6 shadow-2xl border"
         style={{ borderColor: "rgba(200,134,10,0.25)" }}>
 
-        <p className="text-center text-xs font-bold tracking-[0.3em] uppercase mb-5"
-          style={{ color: "#c8860a", letterSpacing: "0.3em" }}>
+        <p className="text-center font-bold mb-5"
+          style={{ color: "#c8860a", fontSize: "1rem", letterSpacing: "0.15em" }}>
           ⏳ נותרו עד המסיבה
         </p>
 
-        <div className="grid grid-cols-4 gap-2 sm:gap-4" dir="ltr">
+        <div className="grid grid-cols-4 gap-3" dir="ltr">
           {LABELS.map(({ key, label }) => (
-            <div key={key} className="flex flex-col items-center gap-1">
+            <div key={key} className="flex flex-col items-center gap-2">
               <div
-                className="w-full flex items-center justify-center rounded-2xl py-3 sm:py-4 border"
+                className="w-full flex items-center justify-center rounded-2xl border"
                 style={{
-                  background: "rgba(200,134,10,0.10)",
-                  borderColor: "rgba(200,134,10,0.28)",
+                  background: "rgba(200,134,10,0.12)",
+                  borderColor: "rgba(200,134,10,0.30)",
+                  paddingTop: "0.875rem",
+                  paddingBottom: "0.875rem",
                 }}
               >
                 <span
                   style={{
                     fontFamily: "var(--font-bebas), sans-serif",
-                    fontSize: "clamp(1.8rem, 7vw, 3rem)",
+                    fontSize: "clamp(2.2rem, 8vw, 3.2rem)",
                     lineHeight: 1,
                     color: "#f0b429",
                     letterSpacing: "0.02em",
@@ -82,14 +84,14 @@ export default function CountdownTimer() {
                   {pad(time[key])}
                 </span>
               </div>
-              <span className="text-xs font-semibold" style={{ color: "#90caf9" }}>
+              <span className="font-bold" style={{ color: "#93c5fd", fontSize: "0.95rem" }}>
                 {label}
               </span>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs mt-5 font-medium" style={{ color: "rgba(147,197,253,0.55)" }}>
+        <p className="text-center mt-5 font-semibold" style={{ color: "rgba(147,197,253,0.7)", fontSize: "0.9rem" }}>
           7 במאי 2026 · 18:00 · כפר האורנים
         </p>
       </div>
