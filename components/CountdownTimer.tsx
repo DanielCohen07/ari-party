@@ -27,12 +27,15 @@ const LABELS = [
 ];
 
 export default function CountdownTimer() {
-  const [time, setTime] = useState(getTimeLeft);
+  const [time, setTime] = useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   useEffect(() => {
+    setTime(getTimeLeft());
     const id = setInterval(() => setTime(getTimeLeft()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (!time) return null;
 
   if (time.done) {
     return (
