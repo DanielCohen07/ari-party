@@ -60,7 +60,7 @@ export default function CountdownTimer() {
           ⏳ נותרו עד המסיבה
         </p>
 
-        <div className="grid grid-cols-4 gap-2 sm:gap-4" dir="rtl">
+        <div className="grid grid-cols-4 gap-2 sm:gap-4" dir="ltr">
           {LABELS.map(({ key, label }) => (
             <div key={key} className="flex flex-col items-center gap-1">
               <div
