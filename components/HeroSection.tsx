@@ -47,7 +47,7 @@ export default function HeroSection() {
           }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hero-invite-new.png"
+            src="/hero-invite-new.webp"
             alt="הזמנה לחגיגת יום הולדת 50 של ארי"
             className="relative rounded-3xl"
             style={{ width: "min(340px, 90vw)", height: "auto", boxShadow: "0 32px 80px rgba(0,0,0,0.6)", display: "block" }}
