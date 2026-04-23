@@ -48,7 +48,7 @@ export default function HeroSection() {
             background: "linear-gradient(135deg, #c8860a, #0f3460, #c8860a)",
           }} />
           <Image
-            src="/hero-invite.webp"
+            src="/hero-invite-new.png"
             alt="הזמנה לחגיגת יום הולדת 50 של ארי"
             width={340}
             height={425}

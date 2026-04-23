@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import CountdownTimer from "@/components/CountdownTimer";
 import EventDetails from "@/components/EventDetails";
 import LocationSection from "@/components/LocationSection";
 import RSVPForm from "@/components/RSVPForm";
@@ -31,6 +32,7 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col items-center gap-0 pb-24">
         <HeroSection />
+        <CountdownTimer />
         <EventDetails />
         <WhatsWaiting />
         <LocationSection />
