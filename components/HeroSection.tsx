@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function HeroSection() {
   return (
     <section className="w-full flex flex-col items-center pt-12 pb-0 px-4 text-center">
@@ -47,14 +45,12 @@ export default function HeroSection() {
           <div className="absolute -inset-3 rounded-[2rem] opacity-40 blur-xl" style={{
             background: "linear-gradient(135deg, #c8860a, #0f3460, #c8860a)",
           }} />
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/hero-invite-new.png"
             alt="הזמנה לחגיגת יום הולדת 50 של ארי"
-            width={340}
-            height={425}
-            priority
             className="relative rounded-3xl"
-            style={{ maxWidth: "min(340px, 90vw)", height: "auto", boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}
+            style={{ width: "min(340px, 90vw)", height: "auto", boxShadow: "0 32px 80px rgba(0,0,0,0.6)", display: "block" }}
           />
         </div>
       </div>
