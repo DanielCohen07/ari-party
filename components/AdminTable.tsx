@@ -58,7 +58,16 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
 
   const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
   const couples     = rsvps.filter((r) => r.guests === 2).length;
-  const confirmedCount = rsvps.filter((r) => r.confirmed).reduce((s, r) => s + r.guests, 0);
+  const confirmedCount = rsvps.filter((r) => r.confirmed === true).reduce((s, r) => s + r.guests, 0);
+
+  const setConfirmed = async (id: string, value: boolean | null) => {
+    setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: value } : r));
+    await fetch(`/api/rsvp/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirmed: value }),
+    });
+  };
 
   const submitAdd = async () => {
     if (!addForm.firstName || !addForm.lastName) return;
@@ -75,15 +84,6 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
       setAdding(false);
     }
     setBusy(false);
-  };
-
-  const toggleConfirmed = async (id: string, current: boolean) => {
-    setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: !current } : r));
-    await fetch(`/api/rsvp/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirmed: !current }),
-    });
   };
 
   const handleDelete = useCallback(async (id: string) => {
@@ -311,33 +311,34 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
 
                     <td className="px-3 py-3">
                       {r.confirmed === true ? (
-                        <button onClick={() => toggleConfirmed(r.id, true)}
+                        <button onClick={() => setConfirmed(r.id, undefined as unknown as null)}
                           className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:opacity-80 transition-opacity"
                           style={{ background: "rgba(74,222,128,0.2)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.4)" }}>
                           ✓ מגיע
                         </button>
                       ) : r.confirmed === false ? (
-                        <button onClick={() => toggleConfirmed(r.id, false)}
+                        <button onClick={() => setConfirmed(r.id, undefined as unknown as null)}
                           className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:opacity-80 transition-opacity"
                           style={{ background: "rgba(248,113,113,0.2)", color: "#f87171", border: "1px solid rgba(248,113,113,0.4)" }}>
                           ✕ לא מגיע
                         </button>
+                      ) : r.confirmed === null ? (
+                        <button onClick={() => setConfirmed(r.id, undefined as unknown as null)}
+                          className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:opacity-80 transition-opacity"
+                          style={{ background: "rgba(148,163,184,0.15)", color: "#94a3b8", border: "1px solid rgba(148,163,184,0.3)" }}>
+                          ? לא ענה
+                        </button>
                       ) : (
-                        <div className="flex gap-1">
-                          <button onClick={() => toggleConfirmed(r.id, false)}
+                        <div className="flex gap-1 flex-wrap">
+                          <button onClick={() => setConfirmed(r.id, true)}
                             className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:bg-green-500/20 transition-colors"
-                            style={{ color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)" }}>
-                            כן
-                          </button>
-                          <button
-                            onClick={async () => {
-                              setRsvps((p) => p.map((x) => x.id === r.id ? { ...x, confirmed: false } : x));
-                              await fetch(`/api/rsvp/${r.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmed: false }) });
-                            }}
+                            style={{ color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)" }}>כן</button>
+                          <button onClick={() => setConfirmed(r.id, false)}
                             className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:bg-red-500/20 transition-colors"
-                            style={{ color: "#f87171", border: "1px solid rgba(248,113,113,0.3)" }}>
-                            לא
-                          </button>
+                            style={{ color: "#f87171", border: "1px solid rgba(248,113,113,0.3)" }}>לא</button>
+                          <button onClick={() => setConfirmed(r.id, null)}
+                            className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:bg-white/10 transition-colors"
+                            style={{ color: "#94a3b8", border: "1px solid rgba(148,163,184,0.3)" }}>לא ענה</button>
                         </div>
                       )}
                     </td>
@@ -365,7 +366,7 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
           {rsvps.map((r) => (
             <button
               key={r.id}
-              onClick={() => toggleConfirmed(r.id, !!r.confirmed)}
+              onClick={() => setConfirmed(r.id, r.confirmed === true ? null : true)}
               className="flex items-center gap-3 px-4 py-3 rounded-2xl text-right transition-all duration-150 cursor-pointer hover:brightness-110"
               style={{
                 background: r.confirmed ? "rgba(74,222,128,0.18)" : "rgba(255,255,255,0.06)",
