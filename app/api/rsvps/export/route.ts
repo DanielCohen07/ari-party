@@ -94,6 +94,30 @@ export async function GET() {
   // Auto-filter on header
   ws.autoFilter = { from: "A1", to: "G1" };
 
+  // Summary block
+  const comingCount    = rsvps.filter(r => r.confirmed === true).length;
+  const notComingCount = rsvps.filter(r => r.confirmed === false).length;
+  const noAnswerCount  = rsvps.filter(r => r.confirmed === null || r.confirmed === undefined).length;
+
+  ws.addRow([]);
+
+  const summaryDef = [
+    { label: "✓ אישרו הגעה",  count: comingCount,    ...COLORS.true  },
+    { label: "✕ לא מגיעים",   count: notComingCount, ...COLORS.false },
+    { label: "? לא ענו",       count: noAnswerCount,  ...COLORS.null  },
+    { label: "סה״כ רשומות",   count: rsvps.length,   bg: "FFE2E8F0", fg: "FF1E293B" },
+  ];
+
+  summaryDef.forEach(({ label, count, bg, fg }) => {
+    const r = ws.addRow([label, count]);
+    [r.getCell(1), r.getCell(2)].forEach((cell) => {
+      cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: bg } };
+      cell.font      = { bold: true, color: { argb: fg }, size: 12 };
+      cell.alignment = { horizontal: "right", vertical: "middle" };
+    });
+    r.height = 22;
+  });
+
   const buffer = await wb.xlsx.writeBuffer();
 
   return new NextResponse(buffer, {
