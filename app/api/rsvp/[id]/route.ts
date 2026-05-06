@@ -18,10 +18,10 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
   const updated = await updateRSVP(id, {
-    firstName: body.firstName,
-    lastName: body.lastName,
-    guests: Number(body.guests),
-    ...(body.phone !== undefined && { phone: body.phone }),
+    ...(body.firstName !== undefined && { firstName: body.firstName }),
+    ...(body.lastName  !== undefined && { lastName:  body.lastName  }),
+    ...(body.guests    !== undefined && { guests:    Number(body.guests) }),
+    ...(body.phone     !== undefined && { phone:     body.phone     }),
   });
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ success: true, entry: updated });
