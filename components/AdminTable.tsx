@@ -105,10 +105,14 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
   return (
     <>
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-4 mb-6">
         <div style={cardStyle(false)}><p className="text-4xl font-black text-white">{rsvps.length}</p><p className="text-sm mt-1" style={{ color: "#93c5fd" }}>אישורים</p></div>
         <div style={cardStyle(false)}><p className="text-4xl font-black text-white">{totalGuests}</p><p className="text-sm mt-1" style={{ color: "#93c5fd" }}>מגיעים</p></div>
         <div style={cardStyle(true)}><p className="text-4xl font-black" style={{ color: "#f0c040" }}>{couples}</p><p className="text-sm mt-1" style={{ color: "#fbbf24" }}>זוגות</p></div>
+        <div style={{ ...cardStyle(false), border: "1px solid rgba(74,222,128,0.3)", background: "rgba(74,222,128,0.08)" }}>
+          <p className="text-4xl font-black" style={{ color: "#4ade80" }}>{confirmedCount}</p>
+          <p className="text-sm mt-1" style={{ color: "#4ade80" }}>אישרו סופי</p>
+        </div>
       </div>
 
       {/* Export */}
