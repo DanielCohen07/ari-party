@@ -36,7 +36,7 @@ function XIcon() {
   );
 }
 
-interface EditState { id: string; firstName: string; lastName: string; guests: string; }
+interface EditState { id: string; firstName: string; lastName: string; guests: string; phone: string; }
 
 const cardStyle = (highlight: boolean): React.CSSProperties => ({
   background: highlight ? "rgba(200,134,10,0.25)" : "rgba(255,255,255,0.10)",
@@ -64,7 +64,7 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
     setDeleting(null); setBusy(false);
   }, []);
 
-  const startEdit  = (r: RSVP) => setEditing({ id: r.id, firstName: r.firstName, lastName: r.lastName, guests: String(r.guests) });
+  const startEdit  = (r: RSVP) => setEditing({ id: r.id, firstName: r.firstName, lastName: r.lastName, guests: String(r.guests), phone: r.phone ?? "" });
   const cancelEdit = () => setEditing(null);
 
   const saveEdit = async () => {
@@ -73,7 +73,7 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
     const res = await fetch(`/api/rsvp/${editing.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...editing, guests: Number(editing.guests) }),
+      body: JSON.stringify({ ...editing, guests: Number(editing.guests), phone: editing.phone || undefined }),
     });
     if (res.ok) {
       const { entry } = await res.json();
@@ -129,11 +129,12 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
               <col />                            {/* שם פרטי */}
               <col />                            {/* שם משפחה */}
               <col style={{ width: "80px" }} /> {/* מגיעים */}
+              <col style={{ width: "120px" }} />{/* טלפון */}
               <col style={{ width: "130px" }} />{/* נרשם */}
             </colgroup>
             <thead>
               <tr style={{ background: "rgba(26,58,107,0.6)", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-                {["פעולות", "#", "שם פרטי", "שם משפחה", "מגיעים", "נרשם"].map((h) => (
+                {["פעולות", "#", "שם פרטי", "שם משפחה", "מגיעים", "טלפון", "נרשם"].map((h) => (
                   <th key={h} className="px-3 py-4 text-right text-xs font-bold uppercase tracking-wider" style={{ color: "#93c5fd" }}>{h}</th>
                 ))}
               </tr>
@@ -201,6 +202,20 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
                           style={{ background: r.guests === 2 ? "rgba(251,191,36,0.2)" : "rgba(147,197,253,0.15)", color: r.guests === 2 ? "#fbbf24" : "#93c5fd" }}>
                           {r.guests === 2 ? "👥" : "👤"} {r.guests}
                         </span>
+                      )}
+                    </td>
+
+                    <td className="px-3 py-3 text-sm" dir="ltr" style={{ color: r.phone ? "#4ade80" : "rgba(147,197,253,0.3)" }}>
+                      {isEditing ? (
+                        <input
+                          type="tel"
+                          value={editing!.phone}
+                          onChange={(e) => setEditing((p) => p ? { ...p, phone: e.target.value } : p)}
+                          placeholder="05X-XXXXXXX"
+                          style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.3)", borderRadius: "0.5rem", padding: "4px 8px", color: "#fff", width: "100%", direction: "ltr" }}
+                        />
+                      ) : (
+                        r.phone ?? "—"
                       )}
                     </td>
 

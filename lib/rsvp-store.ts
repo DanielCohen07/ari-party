@@ -7,6 +7,7 @@ export interface RSVP {
   lastName: string;
   guests: number;
   timestamp: string;
+  phone?: string;
 }
 
 const KEY = "rsvps";
@@ -40,7 +41,7 @@ export async function deleteRSVP(id: string): Promise<boolean> {
 
 export async function updateRSVP(
   id: string,
-  data: Partial<Pick<RSVP, "firstName" | "lastName" | "guests">>
+  data: Partial<Pick<RSVP, "firstName" | "lastName" | "guests" | "phone">>
 ): Promise<RSVP | null> {
   const all = await getAllRSVPs();
   const idx = all.findIndex((r) => r.id === id);

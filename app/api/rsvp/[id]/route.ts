@@ -21,6 +21,7 @@ export async function PATCH(
     firstName: body.firstName,
     lastName: body.lastName,
     guests: Number(body.guests),
+    ...(body.phone !== undefined && { phone: body.phone }),
   });
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ success: true, entry: updated });
