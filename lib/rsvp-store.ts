@@ -8,7 +8,7 @@ export interface RSVP {
   guests: number;
   timestamp: string;
   phone?: string;
-  confirmed?: boolean;
+  confirmed?: boolean | null;
 }
 
 const KEY = "rsvps";
@@ -40,9 +40,23 @@ export async function deleteRSVP(id: string): Promise<boolean> {
   return true;
 }
 
+export async function deleteRSVPsByName(
+  firstName: string,
+  lastName?: string
+): Promise<number> {
+  const all = await getAllRSVPs();
+  const next = all.filter(
+    (r) =>
+      !(r.firstName === firstName && (lastName === undefined || r.lastName === lastName))
+  );
+  const deleted = all.length - next.length;
+  if (deleted > 0) await kv.set(KEY, next);
+  return deleted;
+}
+
 export async function updateRSVP(
   id: string,
-  data: Partial<Pick<RSVP, "firstName" | "lastName" | "guests" | "phone" | "confirmed">>
+  data: Partial<Pick<RSVP, "firstName" | "lastName" | "guests" | "phone">> & { confirmed?: boolean | null }
 ): Promise<RSVP | null> {
   const all = await getAllRSVPs();
   const idx = all.findIndex((r) => r.id === id);
