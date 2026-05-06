@@ -57,7 +57,12 @@ export async function GET() {
     cell.fill   = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1E3A5F" } };
     cell.font   = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
     cell.alignment = { horizontal: "right", vertical: "middle" };
-    cell.border = { bottom: { style: "thin", color: { argb: "FF93C5FD" } } };
+    cell.border = {
+      top:    { style: "medium", color: { argb: "FF1E3A5F" } },
+      bottom: { style: "medium", color: { argb: "FF93C5FD" } },
+      left:   { style: "thin",   color: { argb: "FF93C5FD" } },
+      right:  { style: "thin",   color: { argb: "FF93C5FD" } },
+    };
   });
   headerRow.height = 24;
 
@@ -76,10 +81,19 @@ export async function GET() {
       date,
     });
 
-    row.eachCell((cell) => {
+    const border: ExcelJS.Borders = {
+      top:      { style: "thin", color: { argb: "FFD1D5DB" } },
+      bottom:   { style: "thin", color: { argb: "FFD1D5DB" } },
+      left:     { style: "thin", color: { argb: "FFD1D5DB" } },
+      right:    { style: "thin", color: { argb: "FFD1D5DB" } },
+      diagonal: { style: "thin", color: { argb: "FFD1D5DB" } },
+    };
+
+    row.eachCell({ includeEmpty: true }, (cell) => {
       cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: bg } };
       cell.font      = { color: { argb: fg }, size: 11 };
       cell.alignment = { horizontal: "right", vertical: "middle" };
+      cell.border    = border;
     });
 
     if (wa) {
