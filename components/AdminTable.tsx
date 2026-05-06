@@ -55,7 +55,7 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
 
   const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
   const couples     = rsvps.filter((r) => r.guests === 2).length;
-  const confirmedCount = rsvps.filter((r) => r.confirmed).length;
+  const confirmedCount = rsvps.filter((r) => r.confirmed).reduce((s, r) => s + r.guests, 0);
 
   const toggleConfirmed = async (id: string, current: boolean) => {
     setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: !current } : r));
