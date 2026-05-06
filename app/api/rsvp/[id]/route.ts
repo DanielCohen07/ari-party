@@ -22,6 +22,7 @@ export async function PATCH(
     ...(body.lastName  !== undefined && { lastName:  body.lastName  }),
     ...(body.guests    !== undefined && { guests:    Number(body.guests) }),
     ...(body.phone     !== undefined && { phone:     body.phone     }),
+    ...(body.confirmed !== undefined && { confirmed: body.confirmed }),
   });
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ success: true, entry: updated });

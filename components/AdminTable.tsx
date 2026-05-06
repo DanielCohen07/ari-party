@@ -55,6 +55,16 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
 
   const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
   const couples     = rsvps.filter((r) => r.guests === 2).length;
+  const confirmedCount = rsvps.filter((r) => r.confirmed).length;
+
+  const toggleConfirmed = async (id: string, current: boolean) => {
+    setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: !current } : r));
+    await fetch(`/api/rsvp/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confirmed: !current }),
+    });
+  };
 
   const handleDelete = useCallback(async (id: string) => {
     if (!confirm("למחוק את הרישום?")) return;
@@ -237,6 +247,44 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* Final Confirmation Section */}
+      <div className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-black text-white" style={{ fontFamily: "var(--font-secular), sans-serif" }}>
+            ✅ אישור סופי
+          </h2>
+          <span className="text-sm font-bold px-3 py-1 rounded-full" style={{ background: "rgba(74,222,128,0.2)", color: "#4ade80" }}>
+            {confirmedCount} / {rsvps.length}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2" style={{ direction: "rtl" }}>
+          {rsvps.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => toggleConfirmed(r.id, !!r.confirmed)}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl text-right transition-all duration-150 cursor-pointer hover:brightness-110"
+              style={{
+                background: r.confirmed ? "rgba(74,222,128,0.18)" : "rgba(255,255,255,0.06)",
+                border: `1px solid ${r.confirmed ? "rgba(74,222,128,0.4)" : "rgba(255,255,255,0.12)"}`,
+              }}
+            >
+              <span style={{
+                width: "22px", height: "22px", borderRadius: "6px", flexShrink: 0,
+                background: r.confirmed ? "#4ade80" : "rgba(255,255,255,0.1)",
+                border: `2px solid ${r.confirmed ? "#4ade80" : "rgba(255,255,255,0.3)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {r.confirmed && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#07071a" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+              </span>
+              <span className="text-sm font-semibold truncate" style={{ color: r.confirmed ? "#fff" : "#93c5fd" }}>
+                {r.firstName} {r.lastName}
+              </span>
+              {r.guests === 2 && <span className="text-xs mr-auto" style={{ color: "rgba(251,191,36,0.7)" }}>×2</span>}
+            </button>
+          ))}
+        </div>
       </div>
 
       <p className="text-center text-xs mt-8" style={{ color: "rgba(147,197,253,0.35)" }}>
