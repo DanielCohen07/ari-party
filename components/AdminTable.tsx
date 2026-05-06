@@ -140,11 +140,12 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
               <col />                            {/* שם משפחה */}
               <col style={{ width: "80px" }} /> {/* מגיעים */}
               <col style={{ width: "120px" }} />{/* טלפון */}
+              <col style={{ width: "100px" }} />{/* אישור סופי */}
               <col style={{ width: "130px" }} />{/* נרשם */}
             </colgroup>
             <thead>
               <tr style={{ background: "rgba(26,58,107,0.6)", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-                {["פעולות", "#", "שם פרטי", "שם משפחה", "מגיעים", "טלפון", "נרשם"].map((h) => (
+                {["פעולות", "#", "שם פרטי", "שם משפחה", "מגיעים", "טלפון", "אישור סופי", "נרשם"].map((h) => (
                   <th key={h} className="px-3 py-4 text-right text-xs font-bold uppercase tracking-wider" style={{ color: "#93c5fd" }}>{h}</th>
                 ))}
               </tr>
@@ -237,6 +238,39 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
                         </a>
                       ) : (
                         "—"
+                      )}
+                    </td>
+
+                    <td className="px-3 py-3">
+                      {r.confirmed === true ? (
+                        <button onClick={() => toggleConfirmed(r.id, true)}
+                          className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:opacity-80 transition-opacity"
+                          style={{ background: "rgba(74,222,128,0.2)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.4)" }}>
+                          ✓ מגיע
+                        </button>
+                      ) : r.confirmed === false ? (
+                        <button onClick={() => toggleConfirmed(r.id, false)}
+                          className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:opacity-80 transition-opacity"
+                          style={{ background: "rgba(248,113,113,0.2)", color: "#f87171", border: "1px solid rgba(248,113,113,0.4)" }}>
+                          ✕ לא מגיע
+                        </button>
+                      ) : (
+                        <div className="flex gap-1">
+                          <button onClick={() => toggleConfirmed(r.id, false)}
+                            className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:bg-green-500/20 transition-colors"
+                            style={{ color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)" }}>
+                            כן
+                          </button>
+                          <button
+                            onClick={async () => {
+                              setRsvps((p) => p.map((x) => x.id === r.id ? { ...x, confirmed: false } : x));
+                              await fetch(`/api/rsvp/${r.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmed: false }) });
+                            }}
+                            className="px-2 py-1 rounded-lg text-xs font-bold cursor-pointer hover:bg-red-500/20 transition-colors"
+                            style={{ color: "#f87171", border: "1px solid rgba(248,113,113,0.3)" }}>
+                            לא
+                          </button>
+                        </div>
                       )}
                     </td>
 
