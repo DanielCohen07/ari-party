@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { firstName, lastName, guests } = body;
 
-    if (!firstName || !lastName || !guests) {
+    if (!firstName || !guests) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
