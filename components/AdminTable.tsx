@@ -55,10 +55,19 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
   const [busy, setBusy]     = useState(false);
   const [adding, setAdding] = useState(false);
   const [addForm, setAddForm] = useState<AddState>({ firstName: "", lastName: "", guests: "1", phone: "" });
+  const [filter, setFilter] = useState<"all" | "unanswered" | "coming" | "not_coming">("all");
 
   const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
   const couples     = rsvps.filter((r) => r.guests === 2).length;
   const confirmedCount = rsvps.filter((r) => r.confirmed === true).reduce((s, r) => s + r.guests, 0);
+  const unansweredCount = rsvps.filter((r) => r.confirmed === undefined || r.confirmed === null).length;
+
+  const displayedRsvps = rsvps.filter((r) => {
+    if (filter === "unanswered") return r.confirmed === undefined || r.confirmed === null;
+    if (filter === "coming")     return r.confirmed === true;
+    if (filter === "not_coming") return r.confirmed === false;
+    return true;
+  });
 
   const setConfirmed = async (id: string, value: boolean | null) => {
     setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: value } : r));
@@ -192,12 +201,47 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
         </a>
       </div>
 
+      {/* Filter bar */}
+      <div className="flex gap-2 mb-4 flex-wrap" style={{ direction: "rtl" }}>
+        {([
+          { key: "all",        label: "הכל",        count: rsvps.length },
+          { key: "unanswered", label: "לא ענו",     count: unansweredCount },
+          { key: "coming",     label: "✓ מגיעים",   count: rsvps.filter(r => r.confirmed === true).length },
+          { key: "not_coming", label: "✕ לא מגיעים",count: rsvps.filter(r => r.confirmed === false).length },
+        ] as const).map(({ key, label, count }) => (
+          <button key={key} onClick={() => setFilter(key)}
+            className="px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-all"
+            style={{
+              background: filter === key
+                ? key === "unanswered" ? "rgba(251,191,36,0.25)"
+                : key === "coming"     ? "rgba(74,222,128,0.25)"
+                : key === "not_coming" ? "rgba(248,113,113,0.25)"
+                : "rgba(147,197,253,0.25)"
+                : "rgba(255,255,255,0.07)",
+              border: filter === key
+                ? key === "unanswered" ? "1px solid rgba(251,191,36,0.5)"
+                : key === "coming"     ? "1px solid rgba(74,222,128,0.5)"
+                : key === "not_coming" ? "1px solid rgba(248,113,113,0.5)"
+                : "1px solid rgba(147,197,253,0.4)"
+                : "1px solid rgba(255,255,255,0.12)",
+              color: filter === key
+                ? key === "unanswered" ? "#fbbf24"
+                : key === "coming"     ? "#4ade80"
+                : key === "not_coming" ? "#f87171"
+                : "#93c5fd"
+                : "#94a3b8",
+            }}>
+            {label} <span className="opacity-70 ml-1">({count})</span>
+          </button>
+        ))}
+      </div>
+
       {/* Table */}
       <div className="rounded-3xl overflow-hidden shadow-2xl"
         style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(24px)" }}>
-        {rsvps.length === 0 ? (
+        {displayedRsvps.length === 0 ? (
           <div className="py-20 text-center" style={{ color: "#93c5fd" }}>
-            <p className="text-5xl mb-4">🫒</p><p className="text-lg font-medium">עדיין אין אישורים</p>
+            <p className="text-5xl mb-4">🫒</p><p className="text-lg font-medium">{filter === "all" ? "עדיין אין אישורים" : "אין רשומות בקטגוריה זו"}</p>
           </div>
         ) : (
           <table className="w-full" style={{ color: "#fff", tableLayout: "fixed" }}>
@@ -219,7 +263,7 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
               </tr>
             </thead>
             <tbody>
-              {rsvps.map((r, i) => {
+              {displayedRsvps.map((r, i) => {
                 const isEditing  = editing?.id === r.id;
                 const isDeleting = deleting === r.id;
                 return (
