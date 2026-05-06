@@ -1,45 +1,105 @@
 import { NextResponse } from "next/server";
 import { getAllRSVPs } from "@/lib/rsvp-store";
-
-function esc(v: string) {
-  return `"${v.replace(/"/g, '""')}"`;
-}
+import ExcelJS from "exceljs";
 
 function confirmLabel(c: boolean | null | undefined) {
   if (c === true)  return "מגיע";
   if (c === false) return "לא מגיע";
   if (c === null)  return "לא ענה";
-  return "";
+  return "לא ענה";
+}
+
+function confirmOrder(c: boolean | null | undefined) {
+  if (c === true)  return 0;
+  if (c === null || c === undefined) return 1;
+  return 2; // false = לא מגיע
+}
+
+const COLORS = {
+  true:    { bg: "FFD1FAE5", fg: "FF065F46" }, // green
+  null:    { bg: "FFFFF9C4", fg: "FF78350F" }, // yellow (also undefined)
+  false:   { bg: "FFFEE2E2", fg: "FF991B1B" }, // red
+};
+
+function rowColor(c: boolean | null | undefined) {
+  if (c === true)  return COLORS.true;
+  if (c === false) return COLORS.false;
+  return COLORS.null;
 }
 
 export async function GET() {
   const rsvps = await getAllRSVPs();
 
-  const header = "שם פרטי,שם משפחה,מספר מגיעים,טלפון,וואטסאפ,סטטוס אישור,תאריך רישום\n";
-  const rows = rsvps
-    .map((r) => {
-      const date = new Date(r.timestamp).toLocaleString("he-IL");
-      const wa = r.phone
-        ? `https://wa.me/972${r.phone.replace(/^0/, "")}`
-        : "";
-      return [
-        esc(r.firstName),
-        esc(r.lastName),
-        r.guests,
-        esc(r.phone ?? ""),
-        esc(wa),
-        esc(confirmLabel(r.confirmed)),
-        esc(date),
-      ].join(",");
-    })
-    .join("\n");
+  const sorted = [...rsvps].sort((a, b) => {
+    const diff = confirmOrder(a.confirmed) - confirmOrder(b.confirmed);
+    if (diff !== 0) return diff;
+    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+  });
 
-  const csv = "﻿" + header + rows;
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("רשימת אורחים", {
+    views: [{ rightToLeft: true }],
+  });
 
-  return new NextResponse(csv, {
+  ws.columns = [
+    { header: "שם פרטי",       key: "firstName", width: 18 },
+    { header: "שם משפחה",      key: "lastName",  width: 18 },
+    { header: "מגיעים",        key: "guests",    width: 10 },
+    { header: "טלפון",         key: "phone",     width: 16 },
+    { header: "וואטסאפ",       key: "wa",        width: 36 },
+    { header: "סטטוס אישור",   key: "status",    width: 14 },
+    { header: "תאריך רישום",   key: "date",      width: 22 },
+  ];
+
+  // Header row styling
+  const headerRow = ws.getRow(1);
+  headerRow.eachCell((cell) => {
+    cell.fill   = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1E3A5F" } };
+    cell.font   = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
+    cell.alignment = { horizontal: "right", vertical: "middle" };
+    cell.border = { bottom: { style: "thin", color: { argb: "FF93C5FD" } } };
+  });
+  headerRow.height = 24;
+
+  sorted.forEach((r) => {
+    const wa = r.phone ? `https://wa.me/972${r.phone.replace(/^0/, "")}` : "";
+    const date = new Date(r.timestamp).toLocaleString("he-IL");
+    const { bg, fg } = rowColor(r.confirmed);
+
+    const row = ws.addRow({
+      firstName: r.firstName,
+      lastName:  r.lastName,
+      guests:    r.guests,
+      phone:     r.phone ?? "",
+      wa,
+      status:    confirmLabel(r.confirmed),
+      date,
+    });
+
+    row.eachCell((cell) => {
+      cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: bg } };
+      cell.font      = { color: { argb: fg }, size: 11 };
+      cell.alignment = { horizontal: "right", vertical: "middle" };
+    });
+
+    if (wa) {
+      const waCell = row.getCell("wa");
+      waCell.value = { text: wa, hyperlink: wa };
+      waCell.font  = { color: { argb: "FF1D4ED8" }, size: 11, underline: true };
+    }
+
+    row.height = 20;
+  });
+
+  // Auto-filter on header
+  ws.autoFilter = { from: "A1", to: "G1" };
+
+  const buffer = await wb.xlsx.writeBuffer();
+
+  return new NextResponse(buffer, {
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="rsvps-ari-50.csv"`,
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="rsvps-ari-50.xlsx"`,
     },
   });
 }
