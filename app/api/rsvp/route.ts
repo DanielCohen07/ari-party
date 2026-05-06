@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       firstName: String(firstName).trim(),
       lastName: String(lastName).trim(),
       guests: Number(guests),
+      ...(body.phone ? { phone: String(body.phone).trim() } : {}),
     });
 
     return NextResponse.json({ success: true, entry });

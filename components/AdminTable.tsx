@@ -37,6 +37,7 @@ function XIcon() {
 }
 
 interface EditState { id: string; firstName: string; lastName: string; guests: string; phone: string; }
+interface AddState  { firstName: string; lastName: string; guests: string; phone: string; }
 
 const cardStyle = (highlight: boolean): React.CSSProperties => ({
   background: highlight ? "rgba(200,134,10,0.25)" : "rgba(255,255,255,0.10)",
@@ -52,10 +53,29 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
   const [editing, setEditing] = useState<EditState | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [busy, setBusy]     = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [addForm, setAddForm] = useState<AddState>({ firstName: "", lastName: "", guests: "1", phone: "" });
 
   const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
   const couples     = rsvps.filter((r) => r.guests === 2).length;
   const confirmedCount = rsvps.filter((r) => r.confirmed).reduce((s, r) => s + r.guests, 0);
+
+  const submitAdd = async () => {
+    if (!addForm.firstName || !addForm.lastName) return;
+    setBusy(true);
+    const res = await fetch("/api/rsvp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...addForm, guests: Number(addForm.guests), phone: addForm.phone || undefined }),
+    });
+    if (res.ok) {
+      const { entry } = await res.json();
+      setRsvps((p) => [...p, entry]);
+      setAddForm({ firstName: "", lastName: "", guests: "1", phone: "" });
+      setAdding(false);
+    }
+    setBusy(false);
+  };
 
   const toggleConfirmed = async (id: string, current: boolean) => {
     setRsvps((p) => p.map((r) => r.id === id ? { ...r, confirmed: !current } : r));
@@ -113,6 +133,50 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
           <p className="text-4xl font-black" style={{ color: "#4ade80" }}>{confirmedCount}</p>
           <p className="text-sm mt-1" style={{ color: "#4ade80" }}>אישרו סופי</p>
         </div>
+      </div>
+
+      {/* Add Manual RSVP */}
+      <div className="mb-4">
+        {!adding ? (
+          <button onClick={() => setAdding(true)}
+            className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm cursor-pointer hover:brightness-110 transition-all duration-200"
+            style={{ background: "rgba(74,222,128,0.15)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.3)", minHeight: "44px" }}>
+            + הוספה ידנית
+          </button>
+        ) : (
+          <div className="rounded-2xl p-4 flex flex-wrap gap-3 items-end"
+            style={{ background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.25)" }}>
+            {(["firstName","lastName"] as const).map((f) => (
+              <div key={f} className="flex flex-col gap-1">
+                <label className="text-xs font-bold" style={{ color: "#93c5fd" }}>{f === "firstName" ? "שם פרטי" : "שם משפחה"}</label>
+                <input value={addForm[f]} onChange={(e) => setAddForm((p) => ({ ...p, [f]: e.target.value }))}
+                  style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "0.5rem", padding: "6px 10px", color: "#fff", width: "130px", direction: "rtl" }} />
+              </div>
+            ))}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold" style={{ color: "#93c5fd" }}>מגיעים</label>
+              <select value={addForm.guests} onChange={(e) => setAddForm((p) => ({ ...p, guests: e.target.value }))}
+                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "0.5rem", padding: "6px 10px", color: "#fff" }}>
+                <option value="1">👤 1</option>
+                <option value="2">👥 2</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold" style={{ color: "#93c5fd" }}>טלפון</label>
+              <input value={addForm.phone} onChange={(e) => setAddForm((p) => ({ ...p, phone: e.target.value }))}
+                placeholder="05X-XXXXXXX" dir="ltr"
+                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: "0.5rem", padding: "6px 10px", color: "#fff", width: "130px" }} />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={submitAdd} disabled={busy || !addForm.firstName || !addForm.lastName}
+                className="px-4 py-2 rounded-xl font-bold text-sm cursor-pointer hover:brightness-110 transition-all"
+                style={{ background: "#4ade80", color: "#07071a", minHeight: "38px" }}>שמור</button>
+              <button onClick={() => setAdding(false)} disabled={busy}
+                className="px-4 py-2 rounded-xl font-bold text-sm cursor-pointer hover:bg-white/10 transition-all"
+                style={{ color: "#94a3b8", border: "1px solid rgba(255,255,255,0.15)", minHeight: "38px" }}>ביטול</button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Export */}
