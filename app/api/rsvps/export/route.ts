@@ -95,9 +95,13 @@ export async function GET() {
   ws.autoFilter = { from: "A1", to: "G1" };
 
   // Summary block
-  const comingCount    = rsvps.filter(r => r.confirmed === true).length;
-  const notComingCount = rsvps.filter(r => r.confirmed === false).length;
-  const noAnswerCount  = rsvps.filter(r => r.confirmed === null || r.confirmed === undefined).length;
+  const sum = (fn: (r: typeof rsvps[0]) => boolean) =>
+    rsvps.filter(fn).reduce((s, r) => s + r.guests, 0);
+
+  const comingCount    = sum(r => r.confirmed === true);
+  const notComingCount = sum(r => r.confirmed === false);
+  const noAnswerCount  = sum(r => r.confirmed === null || r.confirmed === undefined);
+  const totalGuests    = sum(() => true);
 
   ws.addRow([]);
 
@@ -105,7 +109,7 @@ export async function GET() {
     { label: "✓ אישרו הגעה",  count: comingCount,    ...COLORS.true  },
     { label: "✕ לא מגיעים",   count: notComingCount, ...COLORS.false },
     { label: "? לא ענו",       count: noAnswerCount,  ...COLORS.null  },
-    { label: "סה״כ רשומות",   count: rsvps.length,   bg: "FFE2E8F0", fg: "FF1E293B" },
+    { label: "סה״כ אנשים",    count: totalGuests,    bg: "FFE2E8F0", fg: "FF1E293B" },
   ];
 
   summaryDef.forEach(({ label, count, bg, fg }) => {
