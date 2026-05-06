@@ -56,8 +56,9 @@ export default function AdminTable({ initial }: { initial: RSVP[] }) {
   const [adding, setAdding] = useState(false);
   const [addForm, setAddForm] = useState<AddState>({ firstName: "", lastName: "", guests: "1", phone: "" });
 
-  const totalGuests = rsvps.reduce((s, r) => s + r.guests, 0);
-  const couples     = rsvps.filter((r) => r.guests === 2).length;
+  const attending   = rsvps.filter((r) => r.confirmed !== false);
+  const totalGuests = attending.reduce((s, r) => s + r.guests, 0);
+  const couples     = attending.filter((r) => r.guests === 2).length;
   const confirmedCount = rsvps.filter((r) => r.confirmed).reduce((s, r) => s + r.guests, 0);
 
   const submitAdd = async () => {
